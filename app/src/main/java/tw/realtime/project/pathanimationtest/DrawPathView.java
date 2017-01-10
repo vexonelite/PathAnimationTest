@@ -8,12 +8,15 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
 /**
  * Created by vexonelite on 2017/1/9.
+ *
+ * @see <a href="https://segmentfault.com/a/1190000000721127">Reference 1</a>
+ * @see <a href="http://dreamthinking.blog.163.com/blog/static/205181171201393024242296/">Reference 2</a>
+ * @see <a href="http://android-er.blogspot.tw/2011/08/pathaddarc.html">Reference 3</a>
+ * @see <a href="http://android-coding.blogspot.tw/2012/04/draw-cubic-bezier-on-path-cubicto.html">Reference 4</a>
  */
 
 public class DrawPathView extends View {

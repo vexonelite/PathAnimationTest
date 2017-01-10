@@ -26,10 +26,22 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by vexonelite on 2017/01/13.
- */
 
+/**
+ * Created by vexonelite on 2017/01/10.
+ *
+ *
+ * @see <a href="http://blogs.sitepointstatic.com/examples/tech/canvas-curves/bezier-curve.html">Bezier Curve</a>
+ * <p></p>
+ * @see <a href="https://gist.github.com/romannurik/882650">Custom ViewGroup Reference 1</a>
+ * @see <a href="http://stacktips.com/tutorials/android/how-to-create-custom-layout-in-android-by-extending-viewgroup-class">Custom ViewGroup Reference 2</a>
+ * <p></p>
+ * @see <a href="http://stackoverflow.com/questions/28901744/in-android-how-to-use-objectanimator-to-move-to-point-x-along-a-curve">Path animation Reference 1</a>
+ * @see <a href="http://android-coding.blogspot.tw/2015/02/objectanimator-to-animate-coordinates.html">Path animation Reference 2</a>
+ * @see <a href="http://stackoverflow.com/questions/21002795/draw-and-fill-custom-shape">Path animation Reference 3</a>
+ * @see <a href="http://stackoverflow.com/questions/39612318/objectanimator-on-path-not-working-on-marshmallow">Path animation Reference 4</a>
+ * @see <a href="http://stackoverflow.com/questions/6154370/android-move-object-along-a-path">Path animation Reference 5</a>
+ */
 public class PathMotionMenuLayout extends ViewGroup {
 
     private RectF mSourcePoint;
