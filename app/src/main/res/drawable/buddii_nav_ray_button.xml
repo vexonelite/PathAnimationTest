@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+	<item>
+	    <shape android:shape="oval" >
+    		<solid android:color="@color/buddii_orange" />
+    		<size android:width="44dp"
+				android:height="44dp"/>
+		</shape>
+    </item>
+    
+    <!-- The pernal wall icon -->
+	<item>
+	    <bitmap android:src="@drawable/nav_01"
+				android:gravity="center" />
+    </item>
+</layer-list>
