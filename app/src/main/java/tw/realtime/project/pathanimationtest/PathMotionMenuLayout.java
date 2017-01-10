@@ -36,6 +36,9 @@ import java.util.List;
  * @see <a href="https://gist.github.com/romannurik/882650">Custom ViewGroup Reference 1</a>
  * @see <a href="http://stacktips.com/tutorials/android/how-to-create-custom-layout-in-android-by-extending-viewgroup-class">Custom ViewGroup Reference 2</a>
  * <p></p>
+ * @see <a href="http://stackoverflow.com/questions/25929820/how-to-calculate-position-on-a-circle-with-a-certain-angle">Node Position on a circle</a>
+ * @see <a href="http://www.mathopenref.com/ellipse.html">Node Position on a ellipse</a>
+ * <p></p>
  * @see <a href="http://stackoverflow.com/questions/28901744/in-android-how-to-use-objectanimator-to-move-to-point-x-along-a-curve">Path animation Reference 1</a>
  * @see <a href="http://android-coding.blogspot.tw/2015/02/objectanimator-to-animate-coordinates.html">Path animation Reference 2</a>
  * @see <a href="http://stackoverflow.com/questions/21002795/draw-and-fill-custom-shape">Path animation Reference 3</a>
