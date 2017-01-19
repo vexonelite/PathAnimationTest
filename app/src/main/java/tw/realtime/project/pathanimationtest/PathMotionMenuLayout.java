@@ -53,9 +53,11 @@ public class PathMotionMenuLayout extends ViewGroup {
     private ImageView mMainButton;
     private List<ImageView> mImageViewHolder;
 
+    private int mChildCount = 4;
     private long mDuration;
     private Interpolator mInterpolator;
     private float mRadius;
+    private boolean hasOrbiterClickEffect;
     private OrbiterClickListener mCallback;
 
     private boolean isExpanded;
@@ -95,7 +97,7 @@ public class PathMotionMenuLayout extends ViewGroup {
         mInterpolator = new AccelerateDecelerateInterpolator();
         mRadius = context.getResources().getDisplayMetrics().density * 100f;
         addMainButton(context);
-        addIconImageViews(context);
+        //addIconImageViews(context);
     }
 
     private void addMainButton (Context context) {
@@ -131,7 +133,7 @@ public class PathMotionMenuLayout extends ViewGroup {
             mImageViewHolder.clear();
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < mChildCount; i++) {
             ImageView imageView = (ImageView) inflater.inflate(
                     R.layout.path_motion_menu_orbiter, PathMotionMenuLayout.this, false);
             imageView.setOnClickListener(new OrbiterClicker(i));
@@ -153,7 +155,7 @@ public class PathMotionMenuLayout extends ViewGroup {
         final int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
                 MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);
         final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
-                MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);
+                MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
 
         final int count = getChildCount();
         for (int i = 0; i < count; i++) {
@@ -249,11 +251,28 @@ public class PathMotionMenuLayout extends ViewGroup {
             Log.i(getLogTag(), "onLayout - mSourcePoint: " + mSourcePoint);
         }
 
-        double angleDifference = 90d / 10d;
-        double baseAngle = 180d + (angleDifference / 2d) ;
+        // ver1
+        //double angleDifference = 90d / 10d;
+        //double baseAngle = 180d + (angleDifference / 2d) ;
+        // ver2
+        double angleDifference = (90d / ((double)(mChildCount + 1))) / ((double)mChildCount);
+        double baseAngle = 180d + (((double)(mChildCount - 1)) * angleDifference);
+        if (mChildCount > 3) {
+            baseAngle = baseAngle - angleDifference;
+        }
+        // ver3
+        //double angleA = 90d / ((double)(mChildCount + 1));
+        //double angleDifference = (90d - angleA) / ((double)(mChildCount - 1));
+        //double baseAngle = 180d + (angleA / 2d);
+        Log.i(getLogTag(), "onLayout - angleDifference: " + angleDifference + ", baseAngle: " + baseAngle);
         int i = 0;
         for (ImageView imageView : mImageViewHolder) {
-            double angle = baseAngle + (i * 3d * angleDifference);
+            // ver1
+            //double angle = baseAngle + (i * 3d * angleDifference);
+            // ver2
+            double angle = baseAngle + (i * ((double)(mChildCount + 1)) * angleDifference);
+            // ver3
+            //double angle = baseAngle + (i * 3d * angleDifference);
             double centerX = mainButtonCenter.x + mRadius * Math.cos(Math.toRadians(angle));
             double centerY = mainButtonCenter.y + mRadius * Math.sin(Math.toRadians(angle));
             Log.i(getLogTag(), "onLayout - imageView(" + i + ") - angle: " + angle + ", centerX: " + centerX + ", centerY: " + centerY);
@@ -599,9 +618,11 @@ public class PathMotionMenuLayout extends ViewGroup {
         if (null == parameters) {
             return;
         }
+        mChildCount = parameters.pChildCount;
         mDuration = parameters.pDuration;
         mInterpolator = parameters.pInterpolator;
         mRadius = getDensity() * parameters.pRadius;
+        hasOrbiterClickEffect = parameters.hasOrbiterClickEffect;
         mCallback = parameters.pCallback;
 
         if ( (null != mMainButton) && (parameters.mMainButtonResId != Integer.MIN_VALUE) ) {
@@ -612,6 +633,8 @@ public class PathMotionMenuLayout extends ViewGroup {
                 e.printStackTrace();
             }
         }
+
+        addIconImageViews(getContext());
 
         if ( (null != mImageViewHolder) && (!mImageViewHolder.isEmpty()) &&
                             (null != parameters.mOrbiterResourceIdList) ) {
@@ -626,14 +649,17 @@ public class PathMotionMenuLayout extends ViewGroup {
                 }
             }
         }
+
         requestLayout();
         invalidate();
     }
 
     public static class Parameters {
+        private int pChildCount = 4;
         private long pDuration;
         private Interpolator pInterpolator;
         private float pRadius;
+        private boolean hasOrbiterClickEffect = true;
         private OrbiterClickListener pCallback;
         private int mMainButtonResId = Integer.MIN_VALUE;
         private List<Integer> mOrbiterResourceIdList;
@@ -667,6 +693,24 @@ public class PathMotionMenuLayout extends ViewGroup {
             if (null != interpolator) {
                 pInterpolator = interpolator;
             }
+            return this;
+        }
+
+        /**
+         *
+         * @param childCount range from 2 to 6
+         * @return
+         */
+        public Parameters setChildCount (int childCount) {
+            if ( (childCount > 1) && (childCount < 7) ) {
+                pChildCount = childCount;
+            }
+            return this;
+        }
+
+
+        public Parameters setOrbiterClickEffectFlag (boolean flag) {
+            hasOrbiterClickEffect = flag;
             return this;
         }
 
@@ -706,7 +750,13 @@ public class PathMotionMenuLayout extends ViewGroup {
             }
             view.setEnabled(false);
 
-            bindOrbiterClickAnimatorSet(view).start();
+            if (hasOrbiterClickEffect) {
+                bindOrbiterClickAnimatorSet(view).start();
+            }
+            else {
+                constructAndPlayAnimation();
+            }
+
             if (null != mCallback) {
                 mCallback.onOrbiterClicked(mPosition);
             }
