@@ -255,24 +255,24 @@ public class PathMotionMenuLayout extends ViewGroup {
         //double angleDifference = 90d / 10d;
         //double baseAngle = 180d + (angleDifference / 2d) ;
         // ver2
-        double angleDifference = (90d / ((double)(mChildCount + 1))) / ((double)mChildCount);
-        double baseAngle = 180d + (((double)(mChildCount - 1)) * angleDifference);
-        if (mChildCount > 3) {
-            baseAngle = baseAngle - angleDifference;
-        }
+//        double angleDifference = (90d / ((double)(mChildCount + 1))) / ((double)mChildCount);
+//        double baseAngle = 180d + (((double)(mChildCount - 1)) * angleDifference);
+//        if (mChildCount > 3) {
+//            baseAngle = baseAngle - angleDifference;
+//        }
         // ver3
-        //double angleA = 90d / ((double)(mChildCount + 1));
-        //double angleDifference = (90d - angleA) / ((double)(mChildCount - 1));
-        //double baseAngle = 180d + (angleA / 2d);
+        double angleA = 90d / ((double)(mChildCount + 1));
+        double angleDifference = (90d - angleA) / ((double)(mChildCount - 1));
+        double baseAngle = 180d + (angleA / 2d);
         Log.i(getLogTag(), "onLayout - angleDifference: " + angleDifference + ", baseAngle: " + baseAngle);
         int i = 0;
         for (ImageView imageView : mImageViewHolder) {
             // ver1
             //double angle = baseAngle + (i * 3d * angleDifference);
             // ver2
-            double angle = baseAngle + (i * ((double)(mChildCount + 1)) * angleDifference);
+            //double angle = baseAngle + (i * ((double)(mChildCount + 1)) * angleDifference);
             // ver3
-            //double angle = baseAngle + (i * 3d * angleDifference);
+            double angle = baseAngle + (i * angleDifference);
             double centerX = mainButtonCenter.x + mRadius * Math.cos(Math.toRadians(angle));
             double centerY = mainButtonCenter.y + mRadius * Math.sin(Math.toRadians(angle));
             Log.i(getLogTag(), "onLayout - imageView(" + i + ") - angle: " + angle + ", centerX: " + centerX + ", centerY: " + centerY);
