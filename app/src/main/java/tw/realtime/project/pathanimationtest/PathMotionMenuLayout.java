@@ -315,7 +315,8 @@ public class PathMotionMenuLayout extends ViewGroup {
 
     private void constructAndPlayAnimation () {
         if ( (null == mImageViewHolder) || (mImageViewHolder.isEmpty()) ||
-                (null == mDestinationRectList) || (mDestinationRectList.isEmpty()) ) {
+                    (null == mDestinationRectList) || (mDestinationRectList.isEmpty()) ||
+                    (null == mSourcePoint) ) {
             return;
         }
         //Log.i(getLogTag(), "constructAnimation");
@@ -351,14 +352,18 @@ public class PathMotionMenuLayout extends ViewGroup {
     private ValueAnimator createPathAnimator (ImageView imageView, RectF destRectF, boolean isExpanded) {
 
         float diffX = Math.abs(destRectF.left - mSourcePoint.left);
+        Log.i(getLogTag(), "createPathAnimator - diffX: " + diffX);
         if (diffX > 0f) {
             diffX = diffX / 2f;
+            Log.i(getLogTag(), "createPathAnimator - diffX / 2: " + diffX);
         }
         PointF controlPoint1 = new PointF(destRectF.left - diffX, destRectF.top);
 
         float diffY = Math.abs(destRectF.top - mSourcePoint.top);
+        Log.i(getLogTag(), "createPathAnimator - diffY: " + diffY);
         if (diffY > 0f) {
             diffY = diffY / 2f;
+            Log.i(getLogTag(), "createPathAnimator - diffY / 2: " + diffY);
         }
         PointF controlPoint2 = new PointF(mSourcePoint.left, mSourcePoint.top - diffY);
 
@@ -368,12 +373,16 @@ public class PathMotionMenuLayout extends ViewGroup {
             path.cubicTo(   controlPoint1.x, controlPoint1.y,
                     controlPoint2.x, controlPoint2.y,
                     mSourcePoint.left, mSourcePoint.top);
+            Log.i(getLogTag(), "createPathAnimator - controlPoint1: " + controlPoint1 +
+                    ", controlPoint2: " + controlPoint2 + ", endPoint: " + mSourcePoint.left + ", " + mSourcePoint.top);
         }
         else {
             path.moveTo(mSourcePoint.left, mSourcePoint.top);
             path.cubicTo(   controlPoint1.x, controlPoint1.y,
                     controlPoint2.x, controlPoint2.y,
                     destRectF.left, destRectF.top);
+            Log.i(getLogTag(), "createPathAnimator - controlPoint1: " + controlPoint1 +
+                    ", controlPoint2: " + controlPoint2 + ", endPoint: " + destRectF.left + ", " + destRectF.top);
         }
 
         ValueAnimator pathAnimator;
