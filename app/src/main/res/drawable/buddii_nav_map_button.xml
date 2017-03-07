@@ -8,8 +8,7 @@
 		</shape>
     </item>
     
-    <!-- The pernal wall icon -->
-	<item>
+    <item>
 	    <bitmap android:src="@drawable/nav_03"
 				android:gravity="center" />
     </item>
