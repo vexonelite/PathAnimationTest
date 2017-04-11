@@ -19,26 +19,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        PathMotionMenuLayout pmmLayout = (PathMotionMenuLayout) findViewById(R.id.pathMotionMenu);
-        if (null != pmmLayout) {
-
-            Integer[] resId = {
-                    R.drawable.buddii_nav_personal_wall_button,
-                    R.drawable.buddii_nav_world_wall_button,
-                    R.drawable.buddii_nav_qr_scan_button,
-                    R.drawable.buddii_nav_map_button
-            };
-            pmmLayout.setParameters(
-                    new PathMotionMenuLayout.Parameters()
-                            .setChildCount(6)
-                            .setLayoutRadius(150)
-                            .setDuration(300)
-                            .setInterpolator(new AccelerateDecelerateInterpolator())
-                            .setMainButtonResourceId(R.drawable.buddii_nav_ray_button)
-                            //.setOrbiterClickEffectFlag(false)
-                            .setOrbiterResourceIdList(new ArrayList<>(Arrays.asList(resId)))
-                            .setOrbiterClickListener(new MenuOrbiterClickCallback()));
-        }
+//        PathMotionMenuLayout pmmLayout = (PathMotionMenuLayout) findViewById(R.id.pathMotionMenu);
+//        if (null != pmmLayout) {
+//
+//            Integer[] resId = {
+//                    R.drawable.buddii_nav_personal_wall_button,
+//                    R.drawable.buddii_nav_world_wall_button,
+//                    R.drawable.buddii_nav_qr_scan_button,
+//                    R.drawable.buddii_nav_map_button
+//            };
+//            pmmLayout.setParameters(
+//                    new PathMotionMenuLayout.Parameters()
+//                            .setChildCount(6)
+//                            .setLayoutRadius(150)
+//                            .setDuration(300)
+//                            .setInterpolator(new AccelerateDecelerateInterpolator())
+//                            .setMainButtonResourceId(R.drawable.buddii_nav_ray_button)
+//                            //.setOrbiterClickEffectFlag(false)
+//                            .setOrbiterResourceIdList(new ArrayList<>(Arrays.asList(resId)))
+//                            .setOrbiterClickListener(new MenuOrbiterClickCallback()));
+//        }
     }
 
     private class MenuOrbiterClickCallback implements PathMotionMenuLayout.OrbiterClickListener {
