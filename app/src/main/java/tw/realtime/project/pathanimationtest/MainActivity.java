@@ -3,7 +3,6 @@ package tw.realtime.project.pathanimationtest;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        PathMotionMenuLayout pmmLayout = (PathMotionMenuLayout) findViewById(R.id.pathMotionMenu);
-//        if (null != pmmLayout) {
+//        PathMotionMenuLayout pathMotionMenu = (PathMotionMenuLayout) findViewById(R.id.pathMotionMenu);
+//        if (null != pathMotionMenu) {
 //
 //            Integer[] resId = {
 //                    R.drawable.buddii_nav_personal_wall_button,
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 //                    R.drawable.buddii_nav_qr_scan_button,
 //                    R.drawable.buddii_nav_map_button
 //            };
-//            pmmLayout.setParameters(
+//            pathMotionMenu.setParameters(
 //                    new PathMotionMenuLayout.Parameters()
 //                            .setChildCount(6)
 //                            .setLayoutRadius(150)
@@ -39,9 +38,28 @@ public class MainActivity extends AppCompatActivity {
 //                            .setOrbiterResourceIdList(new ArrayList<>(Arrays.asList(resId)))
 //                            .setOrbiterClickListener(new MenuOrbiterClickCallback()));
 //        }
+
+        RotationMenuLayout rotationMenu = (RotationMenuLayout) findViewById(R.id.rotationMenu);
+        if (null != rotationMenu) {
+
+            Integer[] resId = {
+                    R.drawable.buddii_nav_personal_wall_button,
+                    R.drawable.buddii_nav_world_wall_button,
+                    R.drawable.buddii_nav_qr_scan_button,
+                    R.drawable.buddii_nav_map_button
+            };
+            rotationMenu.setParameters(
+                    new RotationMenuLayout.Parameters()
+                            .setChildCount(6)
+                            .setLayoutRadius(150)
+                            .setDuration(300)
+                            .setMainButtonResourceId(R.drawable.buddii_nav_ray_button)
+                            .setOrbiterResourceIdList(new ArrayList<>(Arrays.asList(resId)))
+                            .setOrbiterClickListener(new MenuOrbiterClickCallback()));
+        }
     }
 
-    private class MenuOrbiterClickCallback implements PathMotionMenuLayout.OrbiterClickListener {
+    private class MenuOrbiterClickCallback implements OrbiterClickListener {
         @Override
         public void onOrbiterClicked(int position) {
             Log.i(getLogTag(), "onOrbiterClicked: " + position);
