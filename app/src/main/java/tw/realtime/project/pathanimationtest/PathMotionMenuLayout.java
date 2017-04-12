@@ -143,6 +143,32 @@ public class PathMotionMenuLayout extends ViewGroup {
         }
     }
 
+    public void setMainButtonImageResource(int resourceId) {
+        if (null != mMainButton) {
+            try {
+                mMainButton.setImageResource(resourceId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setSubButtonImageResource(int position, int resourceId) {
+        if ( (null != mImageViewHolder) && (!mImageViewHolder.isEmpty())
+                                        && (null != mImageViewHolder.get(position))) {
+            try {
+                ImageView imageView = mImageViewHolder.get(position);
+                imageView.setImageResource(resourceId);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void closeMenu() {
+        constructAndPlayAnimation();
+    }
 
 
     @Override
@@ -734,15 +760,11 @@ public class PathMotionMenuLayout extends ViewGroup {
         }
 
         public Parameters setOrbiterResourceIdList (List<Integer> resourceIdList) {
-            if ( (null != resourceIdList) && (resourceIdList.size() == 4) ) {
+            if ( (null != resourceIdList) && (!resourceIdList.isEmpty()) ) {
                 mOrbiterResourceIdList = resourceIdList;
             }
             return this;
         }
-    }
-
-    public interface OrbiterClickListener {
-        void onOrbiterClicked (int position);
     }
 
     private class OrbiterClicker implements View.OnClickListener {
