@@ -6,16 +6,14 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PointF;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -36,17 +34,13 @@ import java.util.List;
  */
 public class RotationMenuLayout extends ViewGroup {
 
-    private RectF mSourcePoint;
-    private List<RectF> mDestinationRectList;
-
     private ImageView mMainButton;
     private List<ViewGroup> mImageViewHolder;
 
-    private int mChildCount = 1;
+    private int mChildCount = 4;
     private long mDuration;
-    private Interpolator mInterpolator;
     private float mRadius;
-    private boolean hasOrbiterClickEffect;
+    private OrbiterClickListener mCallback;
 
     private boolean isExpanded;
     private boolean buttonLock;
@@ -80,9 +74,6 @@ public class RotationMenuLayout extends ViewGroup {
 
     private void init (Context context) {
         mDuration = 350;
-        //mInterpolator = new LinearInterpolator();
-        //mInterpolator = new OvershootInterpolator();
-        mInterpolator = new AccelerateDecelerateInterpolator();
         mRadius = context.getResources().getDisplayMetrics().density * 100f;
         addMainButton(context);
         addIconImageViews(context);
@@ -101,50 +92,8 @@ public class RotationMenuLayout extends ViewGroup {
                 if (buttonLock) {
                     return;
                 }
-
                 view.setEnabled(false);
-
-                //constructAndPlayAnimation();
-
-
-                ArrayList<ValueAnimator> animatorList = new ArrayList<>();
-                ArrayList<ValueAnimator> animatorList2 = new ArrayList<>();
-                for (int i = 0; i < mImageViewHolder.size(); i++) {
-                    ViewGroup viewGroup = mImageViewHolder.get(i);
-
-                    float rotationAngle = 45f;
-                    ValueAnimator rotationAnimator = ObjectAnimator.ofFloat(viewGroup , "rotation", 0f, rotationAngle);
-                    rotationAnimator.setDuration(mDuration);
-                    rotationAnimator.setInterpolator(mInterpolator);
-                    animatorList.add(rotationAnimator);
-
-                    ImageView imageView = (ImageView) viewGroup.findViewById(R.id.iconView);
-                    ValueAnimator rotationAnimator2 = ObjectAnimator.ofFloat(imageView , "rotation", 0f, -rotationAngle);
-                    rotationAnimator.setDuration(mDuration);
-                    rotationAnimator.setInterpolator(mInterpolator);
-                    animatorList.add(rotationAnimator2);
-
-                    float measureHeight = (float) imageView.getMeasuredHeight();
-                    float ratioY = 1.5f;
-                    float refCenterY = (ratioY * measureHeight);
-
-                    ValueAnimator transYAnimator = ObjectAnimator.ofFloat(
-                            imageView, "translationY", 0f, -refCenterY);
-                    transYAnimator.setDuration(mDuration);
-                    transYAnimator.setInterpolator(new LinearInterpolator());
-                    animatorList2.add(transYAnimator);
-                }
-
-                ValueAnimator[] animatorArray = animatorList.toArray(new ValueAnimator[animatorList.size()]);
-                AnimatorSet animatorSet = new AnimatorSet();
-                animatorSet.playTogether(animatorArray);
-
-                ValueAnimator[] animatorArray2 = animatorList.toArray(new ValueAnimator[animatorList2.size()]);
-                AnimatorSet animatorSet2 = new AnimatorSet();
-                animatorSet2.playTogether(animatorArray2);
-
-                animatorSet2.start();
-
+                constructAndPlayAnimation();
                 view.setEnabled(true);
             }
         });
@@ -162,14 +111,40 @@ public class RotationMenuLayout extends ViewGroup {
 
         for (int i = 0; i < mChildCount; i++) {
             ViewGroup viewGroup = (ViewGroup) inflater.inflate(
-                    R.layout.path_motion_menu_orbiter2, RotationMenuLayout.this, false);
-            //imageView.setOnClickListener(new OrbiterClicker(i));
+                    R.layout.rotation_menu_orbiter, RotationMenuLayout.this, false);
+            viewGroup.setOnClickListener(new OrbiterClicker(i));
             LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             addView(viewGroup, params);
             mImageViewHolder.add(viewGroup);
         }
     }
 
+    public void setMainButtonImageResource(int resourceId) {
+        if (null != mMainButton) {
+            try {
+                mMainButton.setImageResource(resourceId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setSubButtonImageResource(int position, int resourceId) {
+        if ((null != mImageViewHolder) && (!mImageViewHolder.isEmpty()) && (null != mImageViewHolder.get(position))) {
+            try {
+                ViewGroup viewGroup = mImageViewHolder.get(position);
+                ImageView imageView = (ImageView) viewGroup.findViewById(R.id.iconView);
+                imageView.setImageResource(resourceId);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void closeMenu() {
+        constructAndPlayAnimation();
+    }
 
 
     @Override
@@ -198,9 +173,9 @@ public class RotationMenuLayout extends ViewGroup {
         ViewGroup viewGroup = mImageViewHolder.get(0);
         // size of orbiter button
         float ringSize = (float) viewGroup.getMeasuredWidth();
-        float rationX = 1f; // 5f;
+        float rationX = 1f; //5f;
         int measureWidth = (int)(mRadius + mainSize + (rationX * ringSize) );
-        float rationY = 1f; // 5f;
+        float rationY = 1f; //5f;
         int measureHeight = (int)(mRadius + mainSize + (rationY * ringSize) );
         //Log.i(getLogTag(), "onMeasure - mainSize: " + mainSize + ", ringSize: " + ringSize);
         //Log.i(getLogTag(), "onMeasure - measureWidth: " + measureWidth + ", measureHeight: " + measureHeight);
@@ -231,8 +206,13 @@ public class RotationMenuLayout extends ViewGroup {
         int leftMain = viewGroupWidth - ((int)measuredWidth);
         int topMain = (int)(viewGroupHeight - measureHeight);
 
-        mMainButton.layout(leftMain, topMain, viewGroupWidth, viewGroupHeight);
-        Log.i(getLogTag(), "onLayout - mMainButton: " + leftMain + ", " + viewGroupWidth + ", " + topMain + ", " + viewGroupHeight);
+        mMainButton.layout(
+                leftMain,
+                topMain,
+                leftMain + mMainButton.getMeasuredWidth(),
+                topMain + mMainButton.getMeasuredHeight());
+        Log.i(getLogTag(), "onLayout - mMainButton: " + leftMain + ", " + mMainButton.getMeasuredWidth()
+                + ", " + topMain + ", " + topMain + mMainButton.getMeasuredHeight());
 
         float mainCenterX = ((float) leftMain) + (measuredWidth / 2f);
         float mainCenterY = ((float) topMain) + (measureHeight / 2f);
@@ -259,6 +239,7 @@ public class RotationMenuLayout extends ViewGroup {
         double refCenterY = mainButtonCenter.y + mRadius * Math.sin(Math.toRadians(refAngle));
         double ratioY = 1.5d;
         refCenterY = refCenterY + (ratioY * measureHeight);
+        int differenceX = (int)(mRadius * Math.cos(Math.toRadians(refAngle)) );
 
         int refLeft = (int)(refCenterX - (measuredWidth / 2f));
         int refTop = (int)(refCenterY - (measureHeight / 2f));
@@ -269,17 +250,254 @@ public class RotationMenuLayout extends ViewGroup {
             viewGroup.layout(refLeft, refTop, refRight, refBottom);
             viewGroup.invalidate();
 
-            if (!changed) {
+            if (changed) {
                 Log.i(getLogTag(), "onLayout - getPivotX [1]: " + viewGroup.getPivotX() + ", getPivotY: " + viewGroup.getPivotY());
-                float pivotX = viewGroup.getPivotX();
-                viewGroup.setPivotX(pivotX + mRadius);
+                viewGroup.setPivotX(viewGroup.getPivotX() - differenceX);
                 Log.i(getLogTag(), "onLayout - getPivotX [2]: " + viewGroup.getPivotX() + ", getPivotY: " + viewGroup.getPivotY());
-                ImageView imageView = (ImageView) viewGroup.findViewById(R.id.iconView);
-                Log.i(getLogTag(), "onLayout - getPivotX [3]: " + imageView.getPivotX() + ", getPivotY: " + imageView.getPivotY());
             }
         }
     }
 
 
+    private void constructAndPlayAnimation () {
+        ArrayList<ValueAnimator> phase1AnimatorList = new ArrayList<>();
+        ArrayList<ValueAnimator> phase2AnimatorList = new ArrayList<>();
+        Interpolator phase1Interpolator = new AccelerateInterpolator();
+        Interpolator phase2Interpolator = new AccelerateDecelerateInterpolator();
 
+        float angleA = 90f / ((float)mChildCount);
+        float baseAngle = angleA / ((float)(mChildCount + 1));
+
+        long translateDuration = mDuration / 4;
+        long rotationDuration = translateDuration * 3;
+
+        for (int i = 0; i < mImageViewHolder.size(); i++) {
+            ViewGroup viewGroup = mImageViewHolder.get(i);
+
+            float angle = baseAngle + i * (angleA + baseAngle);
+            float parentStartAngle = isExpanded ? angle : 0f;
+            float parentEndAngle = isExpanded ? 0f : angle;
+            float childStartAngle = isExpanded ? -angle : 0f;
+            float childEndAngle = isExpanded ? 0f : -angle;
+
+            ValueAnimator parentRotationAnimator = ObjectAnimator.ofFloat(
+                    viewGroup , "rotation", parentStartAngle, parentEndAngle);
+            parentRotationAnimator.setDuration(rotationDuration);
+
+            ImageView imageView = (ImageView) viewGroup.findViewById(R.id.iconView);
+            ValueAnimator childRotationAnimator = ObjectAnimator.ofFloat(
+                    imageView , "rotation", childStartAngle, childEndAngle);
+            childRotationAnimator.setDuration(rotationDuration);
+
+            float measureHeight = (float) imageView.getMeasuredHeight();
+            float ratioY = 1.5f;
+            float translationY = ratioY * measureHeight;
+            float startPoint = isExpanded ? -translationY : 0f;
+            float endPoint = isExpanded ? 0f : -translationY;
+
+            ValueAnimator transYAnimator = ObjectAnimator.ofFloat(
+                    viewGroup, "translationY", startPoint, endPoint);
+            transYAnimator.setDuration(translateDuration);
+
+            if (isExpanded) {
+                parentRotationAnimator.setInterpolator(phase1Interpolator);
+                childRotationAnimator.setInterpolator(phase1Interpolator);
+                phase1AnimatorList.add(parentRotationAnimator);
+                phase1AnimatorList.add(childRotationAnimator);
+
+                transYAnimator.setInterpolator(phase2Interpolator);
+                phase2AnimatorList.add(transYAnimator);
+            }
+            else {
+                transYAnimator.setInterpolator(phase1Interpolator);
+                phase1AnimatorList.add(transYAnimator);
+
+                parentRotationAnimator.setInterpolator(phase2Interpolator);
+                childRotationAnimator.setInterpolator(phase2Interpolator);
+                phase2AnimatorList.add(parentRotationAnimator);
+                phase2AnimatorList.add(childRotationAnimator);
+            }
+        }
+
+        ValueAnimator[] phase2AnimatorArray = phase2AnimatorList.toArray(new ValueAnimator[phase2AnimatorList.size()]);
+        AnimatorSet phase2AnimatorSet = new AnimatorSet();
+        phase2AnimatorSet.playTogether(phase2AnimatorArray);
+
+        ValueAnimator[] phase1AnimatorArray = phase1AnimatorList.toArray(new ValueAnimator[phase1AnimatorList.size()]);
+        AnimatorSet phase1AnimatorSet = new AnimatorSet();
+        phase1AnimatorSet.playTogether(phase1AnimatorArray);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playSequentially(phase1AnimatorSet, phase2AnimatorSet);
+        Animator.AnimatorListener callback = (isExpanded)
+                ? new ShrinkageAnimationCallback() : new ExpansionAnimationCallback();
+        animatorSet.addListener(callback);
+        animatorSet.start();
+    }
+
+    private class DefaultAnimationCallback implements Animator.AnimatorListener {
+
+        @Override
+        public void onAnimationStart(Animator animator) {
+            buttonLock = true;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animator) {
+            //Log.i(getLogTag(), "DefaultAnimationCallback - onAnimationEnd");
+            buttonLock = false;
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animator) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animator) {
+
+        }
+    }
+
+    private class ExpansionAnimationCallback extends DefaultAnimationCallback {
+        @Override
+        public void onAnimationEnd(Animator animator) {
+            super.onAnimationEnd(animator);
+            isExpanded = true;
+        }
+    }
+
+    private class ShrinkageAnimationCallback extends DefaultAnimationCallback {
+        @Override
+        public void onAnimationEnd(Animator animator) {
+            super.onAnimationEnd(animator);
+            isExpanded = false;
+        }
+    }
+
+
+    public void setParameters (Parameters parameters) {
+        if (null == parameters) {
+            return;
+        }
+        mChildCount = parameters.pChildCount;
+        mDuration = parameters.pDuration;
+        mRadius = getDensity() * parameters.pRadius;
+        mCallback = parameters.pCallback;
+
+        if ( (null != mMainButton) && (parameters.mMainButtonResId != Integer.MIN_VALUE) ) {
+            try {
+                mMainButton.setImageResource(parameters.mMainButtonResId);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        addIconImageViews(getContext());
+
+        if ( (null != mImageViewHolder) && (!mImageViewHolder.isEmpty()) &&
+                            (null != parameters.mOrbiterResourceIdList) ) {
+            for (int i = 0; i < mImageViewHolder.size(); i++) {
+                try {
+                    ViewGroup viewGroup = mImageViewHolder.get(i);
+                    ImageView imageView = (ImageView) viewGroup.findViewById(R.id.iconView);
+                    Integer resId = parameters.mOrbiterResourceIdList.get(i);
+                    imageView.setImageResource(resId);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        requestLayout();
+        invalidate();
+    }
+
+    public static class Parameters {
+        private int pChildCount = 4;
+        private long pDuration;
+        private float pRadius;
+        private OrbiterClickListener pCallback;
+        private int mMainButtonResId = Integer.MIN_VALUE;
+        private List<Integer> mOrbiterResourceIdList;
+
+        public Parameters () {
+            pDuration = 350;
+            pRadius = 100f;
+        }
+
+        /**
+         *
+         * @param radius unit: dp
+         */
+        public Parameters setLayoutRadius (int radius) {
+            if (radius > 0) {
+                pRadius = radius;
+            }
+            return this;
+        }
+
+        public Parameters setDuration (long duration) {
+            if (duration > 0) {
+                pDuration = duration;
+            }
+            return this;
+        }
+
+        /**
+         *
+         * @param childCount range from 2 to 6
+         * @return
+         */
+        public Parameters setChildCount (int childCount) {
+            if ( (childCount > 1) && (childCount < 7) ) {
+                pChildCount = childCount;
+            }
+            return this;
+        }
+
+
+        public Parameters setOrbiterClickListener (OrbiterClickListener callback) {
+            pCallback = callback;
+            return this;
+        }
+
+        public Parameters setMainButtonResourceId (int resourceId) {
+            mMainButtonResId = resourceId;
+            return this;
+        }
+
+        public Parameters setOrbiterResourceIdList (List<Integer> resourceIdList) {
+            if ( (null != resourceIdList) && (!resourceIdList.isEmpty()) ) {
+                mOrbiterResourceIdList = resourceIdList;
+            }
+            return this;
+        }
+    }
+
+    private class OrbiterClicker implements View.OnClickListener {
+        private int mPosition;
+
+        protected OrbiterClicker(int position) {
+            mPosition = position;
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (buttonLock) {
+                return;
+            }
+            view.setEnabled(false);
+
+            constructAndPlayAnimation();
+
+            if (null != mCallback) {
+                mCallback.onOrbiterClicked(mPosition);
+            }
+
+            view.setEnabled(true);
+        }
+    }
 }
