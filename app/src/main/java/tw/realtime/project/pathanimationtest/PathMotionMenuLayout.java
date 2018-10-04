@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -16,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -323,20 +321,6 @@ public class PathMotionMenuLayout extends ViewGroup {
             i = i + 1;
         }
     }
-
-
-    /**
-     * @param target The View that you want to remove its GlobalLayoutListener.
-     */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static void removeOnGlobalLayoutEvent(View target, ViewTreeObserver.OnGlobalLayoutListener listener){
-        if (Build.VERSION.SDK_INT < 16) {
-            target.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
-        } else {
-            target.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
-        }
-    }
-
 
 
     private void constructAndPlayAnimation () {

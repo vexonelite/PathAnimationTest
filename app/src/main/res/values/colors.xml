@@ -7,4 +7,21 @@
     <color name="buddii_orange">#ffa329</color>
     <color name="buddii_gray_three">#535353</color>
 
+    <color name="color_001">#f7f7f7</color>
+    <color name="color_002">#6dc066</color>
+    <color name="color_003">#6dc066</color>
+    <color name="color_004">#6dc066</color>
+
+    <color name="color_005">#fdaa0e</color>
+    <color name="color_006">#79504a</color>
+    <color name="color_007">#fc98fe</color>
+    <color name="color_008">#a3a319</color>
+    <color name="color_009">#33ccff</color>
+
+    <color name="color_010">#cc66cc</color>
+    <color name="color_011">#ccff33</color>
+    <color name="color_012">#d71f5a</color>
+    <color name="color_013">#ff99cc</color>
+    <color name="color_014">#3366ff</color>
+
 </resources>
